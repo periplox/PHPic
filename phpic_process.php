@@ -1,12 +1,34 @@
 <?php
-strip_tags(str_replace("<br/>", "\r\n", error_reporting(E_ALL)));
+strip_tags(str_replace("<br/>", "\n", error_reporting(E_ALL)));
 ini_set('display_errors', 1);
 
 
 //VARS
 $filesArray = array();
-if($_POST['tar']) { $tar = $_POST['tar']; } else { $tar = './input/'; }
-if($_POST['out']) { $out = $_POST['out']; } else { $out = './output/'; }
+
+// Por seguridad
+if (isset($_POST['tar']) && // Si está seteada
+    is_string($_POST['tar']) && // Y es una cadena
+    !preg_match('/..\//', $_POST['tar']) // Y no contiene ../ dentro de la cadena
+    ) {
+  $tar = './'.$_POST['tar']; // Agrego ./ al inicio para evitar un path absoluto
+}
+else {
+  echo "Illegal input path '$_POST[tar]'. Using default.\n";
+  $tar = './input/';
+}
+if (isset($_POST['out']) && // Si está seteada
+    is_string($_POST['out']) && // Y es una cadena
+    !preg_match('/..\//', $_POST['out']) // Y no contiene ../ dentro de la cadena
+    ) {
+  $out = './'.$_POST['out']; // Agrego ./ al inicio para evitar un path absoluto
+}
+else {
+  echo "Illegal output path '$_POST[out]'. Using default.\n";
+  $out = './output/';
+}
+
+
 $inext = $_POST['inext'];
 $outext = $_POST['outext'];
 $size = $_POST['size'];
@@ -146,24 +168,26 @@ if (glob($tar) != false) {
 
 		}
 
+		// REM - El fin de línea es sólo \n. El \r\n es de Windows
 		//LOG
-		echo "Files successfully processed!\r\n\r\n";
+		echo "Files successfully processed!\n\n";
 
-		echo "::TIME::\r\n";
-		echo date('m-d-Y h:i:s A')."\r\n\r\n";
+		echo "::TIME::\n";
+		echo date('m-d-Y h:i:s A')."\n\n";
 
-		echo "::DETAILS::\r\n";
-		echo "Input folder: ".$tar."\r\n";
-		echo "Output folder: ".$out."\r\n";
-		echo "Input file type/s: ".$inext."\r\n";
-		echo "Output file type: ".$outext."\r\n";
-		echo "Resize to: ".$size."\r\n";
-		echo "Preserve aspect ratio: ".$aspect."\r\n";
-		echo "Quality: ".$qual."\r\n";
-		echo "Rename to: ".$renameto."\r\n";
-		echo "Grayscale filter: ".$gray_f."\r\n";
-		echo "Brightness filter: ".$bri_f."\r\n";
-		echo "Contrast filter: ".$cont_f."\r\n";
+		// REM - Si usás comillas dobles, escribí las variables adentro...
+		echo "::DETAILS::\n";
+		echo "Input folder: $tar\n";
+		echo "Output folder: $out\n";
+		echo "Input file type/s: $inext\n";
+		echo "Output file type: $outext\n";
+		echo "Resize to: $size\n";
+		echo "Preserve aspect ratio: $aspect\n";
+		echo "Quality: $qual\n";
+		echo "Rename to: $renameto\n";
+		echo "Grayscale filter: $gray_f\n";
+		echo "Brightness filter: $bri_f\n";
+		echo "Contrast filter: $cont_f\n";
 
 	}
 
